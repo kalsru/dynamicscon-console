@@ -63,6 +63,9 @@ h1 .sub{color:var(--mut);font-weight:600}
 .clearlink{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;margin-left:8px;
   padding:3px 8px;border-radius:6px;border:1px solid var(--line2);background:var(--bg2);color:var(--mut);cursor:pointer;transition:.13s}
 .clearlink:hover{color:var(--hot);border-color:var(--hot)}
+.clearlink:disabled{opacity:.4;cursor:default;color:var(--mut2)}
+.clearlink:disabled:hover{color:var(--mut2);border-color:var(--line2)}
+.noact{color:var(--mut2);font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase}
 
 /* filter rail */
 .rail{position:sticky;top:14px}
@@ -423,7 +426,7 @@ function renderRail(){
   document.getElementById('hasInt').onchange=e=>{F.hasInt=e.target.checked;page=0;renderAll();};
   document.getElementById('reset').onclick=clearAll;
   const na=F.sc.size+F.sen.size+F.fa.size+F.ind.size+F.emp.size+F.inf.size+(F.q?1:0)+(F.iq?1:0)+(F.hasInt?1:0);
-  document.getElementById('activeCount').innerHTML = na?`<b>${na}</b> active <button class="clearlink" id="clearTop">Clear all</button>`:'';
+  document.getElementById('activeCount').innerHTML = `${na?`<b>${na}</b> active`:'<span class="noact">none active</span>'} <button class="clearlink" id="clearTop"${na?'':' disabled'}>Clear all</button>`;
   const ct=document.getElementById('clearTop'); if(ct) ct.onclick=clearAll;
 }
 let dt; function debounced(){clearTimeout(dt);dt=setTimeout(renderMain,140);}
