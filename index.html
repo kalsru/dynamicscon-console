@@ -60,6 +60,9 @@ h1 .sub{color:var(--mut);font-weight:600}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px}
 .panel-h{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;border-bottom:1px solid var(--line)}
 .panel-h h2{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--mut);margin:0;font-weight:500}
+.clearlink{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;margin-left:8px;
+  padding:3px 8px;border-radius:6px;border:1px solid var(--line2);background:var(--bg2);color:var(--mut);cursor:pointer;transition:.13s}
+.clearlink:hover{color:var(--hot);border-color:var(--hot)}
 
 /* filter rail */
 .rail{position:sticky;top:14px}
@@ -304,6 +307,7 @@ function passes(r){
   return active.every(k=>F[k].has(r[k]||'Unknown'));                   // intersection: matches every active group
 }
 function filtered(){ return R.filter(passes); }
+function clearAll(){ F.q='';F.iq='';F.hasInt=false; FACETS.forEach(k=>F[k].clear()); page=0; renderAll(); }
 
 /* ---------- KPIs ---------- */
 function kpiTile(v,l,d,accent){ return `<div class="kpi" style="--accent:${accent||'var(--amber)'}"><div class="v">${v}</div><div class="l">${l}</div>${d?`<div class="d">${d}</div>`:''}</div>`; }
@@ -417,11 +421,10 @@ function renderRail(){
   const q=document.getElementById('q'); q.oninput=()=>{F.q=q.value;page=0;debounced();};
   const iq=document.getElementById('iq'); iq.oninput=()=>{F.iq=iq.value;page=0;debounced();};
   document.getElementById('hasInt').onchange=e=>{F.hasInt=e.target.checked;page=0;renderAll();};
-  document.getElementById('reset').onclick=()=>{
-    F.q='';F.iq='';F.hasInt=false;['sc','sen','fa','ind','emp','inf'].forEach(k=>F[k].clear());page=0;renderAll();
-  };
+  document.getElementById('reset').onclick=clearAll;
   const na=F.sc.size+F.sen.size+F.fa.size+F.ind.size+F.emp.size+F.inf.size+(F.q?1:0)+(F.iq?1:0)+(F.hasInt?1:0);
-  document.getElementById('activeCount').innerHTML = na?`<b>${na}</b> active`:'';
+  document.getElementById('activeCount').innerHTML = na?`<b>${na}</b> active <button class="clearlink" id="clearTop">Clear all</button>`:'';
+  const ct=document.getElementById('clearTop'); if(ct) ct.onclick=clearAll;
 }
 let dt; function debounced(){clearTimeout(dt);dt=setTimeout(renderMain,140);}
 
@@ -529,7 +532,7 @@ function renderTable(){
   }).join('') : `<tr><td colspan="9">${emptyStateHtml()}</td></tr>`;
   document.querySelectorAll('tbody tr[data-i]').forEach(tr=>tr.onclick=()=>openDrawer(+tr.dataset.i));
   document.querySelectorAll('.relax[data-rk]').forEach(b=>b.onclick=()=>{F[b.dataset.rk].clear();page=0;renderAll();});
-  const ra=document.getElementById('relaxAll'); if(ra) ra.onclick=()=>{F.q='';F.iq='';F.hasInt=false;['sc','sen','fa','ind','emp','inf'].forEach(k=>F[k].clear());page=0;renderAll();};
+  const ra=document.getElementById('relaxAll'); if(ra) ra.onclick=clearAll;
   const ta=document.getElementById('toAny'); if(ta) ta.onclick=()=>{MODE='any';page=0;renderAll();};
 
   document.getElementById('tcount').innerHTML=`<b>${total.toLocaleString()}</b> records`;
